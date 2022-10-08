@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -13,11 +14,24 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,6 +45,18 @@ public class MainActivity extends AppCompatActivity {
     // 定义LocationManager对象
     private LocationManager locationManager;
     private TextView tv_location;
+    private Button btn_start;
+    private Button btn_file;
+
+
+    //加速度事件
+    SensorEvent accData=null;
+    //GPS数据
+    Location locationData=null;
+
+    //stream
+    FileWriter fstream;
+    BufferedWriter out;
 
     private String provider;
 
@@ -39,7 +65,37 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tv_accelerometer_sensor = findViewById(R.id.tv_accelerometer_sensor);
-        tv_location = (TextView) findViewById(R.id.location_tv);
+        tv_location = findViewById(R.id.location_tv);
+        btn_start = findViewById(R.id.btn_start);
+        btn_file = findViewById(R.id.btn_file);
+
+        btn_start.setOnClickListener(new MyBtnListener());
+        btn_file.setOnClickListener(new MyBtnListener());
+
+        //打开文件流
+        try {
+            fstream = new FileWriter(getExternalFilesDir("")+"/"+Instant.now().toString()+".csv");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        out = new BufferedWriter(fstream);
+        try {
+            out.write("acc_x,acc_y,acc_z,latitude,longitude,altitude,date,speed");
+            out.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /*申请权限*/
+        //  操作将用户引导至一个系统设置页面，在该页面上，用户可以为您的应用启用以下选项：授予所有文件的管理权限。
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R || Environment.isExternalStorageManager()) {
+
+        } else {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+            startActivity(intent);
+        }
+
+
 
         this.mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE); //获取传感器服务
 
@@ -123,6 +179,12 @@ public class MainActivity extends AppCompatActivity {
         if (locationManager != null) {
             locationManager.removeUpdates(myLocationListerner);
         }
+        try {
+            out.close();
+            fstream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //传感器监听类
@@ -130,8 +192,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onSensorChanged(SensorEvent event) {
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                Log.d(TAG, "accelerometer data[x:" + event.values[0] + ", y:" + event.values[1] + ", z:" + event.values[2] + "]");
+                //Log.d(TAG, "accelerometer data[x:" + event.values[0] + ", y:" + event.values[1] + ", z:" + event.values[2] + "]");
                 tv_accelerometer_sensor.setText("[x:" + event.values[0] + ", y:" + event.values[1] + ", z:" + event.values[2] + "]");
+                accData = event;
+                //write();
             }
         }
 
@@ -146,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLocationChanged(Location location) {
             // 当GPS定位信息发生改变时，更新位置
+            locationData = location;
             updateView(location);
         }
         @Override
@@ -164,6 +229,50 @@ public class MainActivity extends AppCompatActivity {
                                     Bundle extras) {
         }
     }
+
+    //线程子类
+    private class MyThread1 extends Thread{
+
+        private String name; //窗口名, 也即是线程的名字
+
+        public MyThread1(String name){
+            this.name=name;
+        }
+
+        //循环打印数据
+        @Override
+        public void run(){
+            while(true){
+                write();
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    //按钮监听
+    private class MyBtnListener implements View.OnClickListener {
+        @Override
+        public void onClick(View arg0) {
+            if(arg0.getId()==R.id.btn_start){
+                MyThread1 myThread1 = new MyThread1("start");
+                myThread1.start();
+            }else if(arg0.getId()==R.id.btn_file){
+                String path = "%2fAndroid%2fdara%2f";
+                Uri uri = Uri.parse("content://com.android.externalstorage.documents/document/primary:" + path);
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("*/*");//想要展示的文件类型
+                intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri);
+                startActivityForResult(intent, 0);
+
+            }
+        }
+    }
+
 
     //打印位置信息
     private void updateView(Location location) {
@@ -185,6 +294,51 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // 如果传入的Location对象为空则清空EditText
             tv_location.setText("");
+        }
+    }
+
+    static{
+
+    }
+    // 写入文件
+    private void write(){
+        //acc_x,acc_y,acc_z,latitude,longitude,altitude,date,speed
+        String acc_x,acc_y,acc_z;
+        if(accData != null){
+            acc_x = String.valueOf(accData.values[0]);
+            acc_y = String.valueOf(accData.values[1]);
+            acc_z = String.valueOf(accData.values[2]);
+        }else{
+            acc_x = "NULL";
+            acc_y = "NULL";
+            acc_z = "NULL";
+        }
+        String latitude,longitude,altitude,speed;
+        if(locationData != null){
+            latitude = String.valueOf(locationData.getLatitude());
+            longitude = String.valueOf(locationData.getLongitude());
+            altitude = String.valueOf(locationData.getAltitude());
+            speed = String.valueOf(locationData.getSpeed());
+        }else{
+            latitude = "NULL";
+            longitude = "NULL";
+            altitude = "NULL";
+            speed = "NULL";
+        }
+        try {
+            out.write(acc_x+","
+                    +acc_y+","
+                    +acc_z+","
+                    +latitude+","
+                    +longitude+","
+                    +altitude+","
+                    +Instant.now().toString()+","
+                    +speed);
+            out.newLine();
+            out.flush();
+            //Log.d("PAN","out");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
