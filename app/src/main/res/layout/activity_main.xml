@@ -9,33 +9,116 @@
 
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/tv_title_acc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="accelerometer_sensor" />
+        android:text="加速度传感器数据"
+        android:textAlignment="center"
+        android:textColor="#FF5722"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tv_accelerometer_sensor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="TextView"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_title_magnetic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="磁场传感器数据"
+        android:textAlignment="center"
+        android:textColor="#FF5722"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_magnetic_sensor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_title_rotation_vector"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="旋转矢量传感器数据"
+        android:textAlignment="center"
+        android:textColor="#FF5722"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_rotation_sensor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_titla_R"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="R数据"
+        android:textAlignment="center"
+        android:textColor="#FF5722"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_R"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_title_gps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="GPS数据"
+        android:textAlignment="center"
+        android:textColor="#FF5722"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/location_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="TextView"
+        android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/btn_start"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start" />
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btn_file"
+        <Switch
+            android:id="@+id/switch_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:rotationX="-2"
+            android:text="打开开关开始记录"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_file"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="跳转文件管理" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="File" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"/>
 
 </LinearLayout>
