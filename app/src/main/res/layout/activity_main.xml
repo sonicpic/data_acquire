@@ -5,8 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/gradual_color_bg"
     tools:context=".MainActivity">
 
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:text="冰车僵尸×路障僵尸"
+        android:textAlignment="center"
+        android:textColor="#EDF19102"
+        android:textSize="34sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tv_title_acc"
@@ -14,7 +26,7 @@
         android:layout_height="wrap_content"
         android:text="加速度传感器数据"
         android:textAlignment="center"
-        android:textColor="#FF5722"
+        android:textColor="#3F51B5"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -31,7 +43,7 @@
         android:layout_height="wrap_content"
         android:text="磁场传感器数据"
         android:textAlignment="center"
-        android:textColor="#FF5722"
+        android:textColor="#3F51B5"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -48,7 +60,7 @@
         android:layout_height="wrap_content"
         android:text="旋转矢量传感器数据"
         android:textAlignment="center"
-        android:textColor="#FF5722"
+        android:textColor="#3F51B5"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -56,16 +68,16 @@
         android:id="@+id/tv_rotation_sensor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="暂时关闭"
         android:textSize="20sp" />
 
     <TextView
         android:id="@+id/tv_titla_R"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="R数据"
+        android:text="东北天坐标系下加速度数据"
         android:textAlignment="center"
-        android:textColor="#FF5722"
+        android:textColor="#3F51B5"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -82,7 +94,7 @@
         android:layout_height="wrap_content"
         android:text="GPS数据"
         android:textAlignment="center"
-        android:textColor="#FF5722"
+        android:textColor="#3F51B5"
         android:textSize="20sp"
         android:textStyle="bold" />
 

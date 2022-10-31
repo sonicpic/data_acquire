@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     float[] accValues = new float[3];//加速度数据
     float[] magneticValues = new float[3];//地磁数据
+    float gri = 0; //z轴加速度数据
     Location locationData = null;//GPS数据
 
     //stream
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         }
         out = new BufferedWriter(fstream);
         try {
-            out.write("acc_x,acc_y,acc_z,latitude,longitude,altitude,date,speed");  //打印表头
+            out.write("acc_x,acc_y,acc_z,latitude,longitude,altitude,date,speed,z_gri");  //打印表头
             out.newLine();
         } catch (IOException e) {
             e.printStackTrace();
@@ -174,13 +175,13 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "magSensor sensors are not supported on current devices.");
         }
 
-        /*注册旋转矢量传感器监听*/
-        Sensor rotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-        if (rotationSensor != null) {
-            mSensorManager.registerListener(mMySensorEventListener, rotationSensor, SensorManager.SENSOR_DELAY_UI);
-        } else {
-            Log.d(TAG, "rotationSensor sensors are not supported on current devices.");
-        }
+//        /*注册旋转矢量传感器监听*/
+//        Sensor rotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+//        if (rotationSensor != null) {
+//            mSensorManager.registerListener(mMySensorEventListener, rotationSensor, SensorManager.SENSOR_DELAY_UI);
+//        } else {
+//            Log.d(TAG, "rotationSensor sensors are not supported on current devices.");
+//        }
     }
 
     @Override
@@ -216,19 +217,19 @@ public class MainActivity extends AppCompatActivity {
             /*加速度传感器数据*/
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 //Log.d(TAG, "accelerometer data[x:" + event.values[0] + ", y:" + event.values[1] + ", z:" + event.values[2] + "]");
-                tv_accelerometer_sensor.setText("[x:" + event.values[0] + ", y:" + event.values[1] + ", z:" + event.values[2] + "]");
+                tv_accelerometer_sensor.setText("x:" + event.values[0] + "\ny:" + event.values[1] + "\nz:" + event.values[2]);
                 accValues = event.values.clone();    //有没有可能有读写安全问题
             }
             /*磁场传感器数据*/
             if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
                 //Log.d(TAG, "accelerometer data[x:" + event.values[0] + ", y:" + event.values[1] + ", z:" + event.values[2] + "]");
-                tv_magnetic_sensor.setText("[x:" + event.values[0] + ", y:" + event.values[1] + ", z:" + event.values[2] + "]");
+                tv_magnetic_sensor.setText("x:" + event.values[0] + "\ny:" + event.values[1] + "\nz:" + event.values[2]);
                 magneticValues = event.values.clone();
             }
             /*旋转矢量传感器数据*/
             if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
                 //Log.d(TAG, "accelerometer data[x:" + event.values[0] + ", y:" + event.values[1] + ", z:" + event.values[2] + "]");
-                tv_rotation_sensor.setText("[x:" + event.values[0] + ", y:" + event.values[1] + ", z:" + event.values[2] + "]");
+                tv_rotation_sensor.setText("x:" + event.values[0] + "\ny:" + event.values[1] + "\nz:" + event.values[2]);
                 //magneticValues = event.values.clone();
             }
             /*获取屏幕方向*/
@@ -236,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
             float[] values = new float[3];
             mSensorManager.getRotationMatrix(R, null, accValues, magneticValues);
             mSensorManager.getOrientation(R, values);
-            float gri = accValues[0] * R[6] + accValues[1] * R[7] + accValues[2] * R[8];
+            gri = accValues[0] * R[6] + accValues[1] * R[7] + accValues[2] * R[8];
             tv_R.setText(String.valueOf(gri));
             //Log.d("MainActivity", "value[0] is " + Math.toDegrees(values[0]));
         }
@@ -289,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             while (true) {
                 if (switch_start.isChecked()) {
-                    write(accValues, locationData);
+                    write(accValues, locationData,gri);
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
@@ -346,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 写入文件
-    private void write(float[] accData, Location locationData) {
+    private void write(float[] accData, Location locationData,float gri) {
         String acc_x, acc_y, acc_z;
         if (accData != null) {
             acc_x = String.valueOf(accData[0]);
@@ -377,7 +378,8 @@ public class MainActivity extends AppCompatActivity {
                     + longitude + ","
                     + altitude + ","
                     + Instant.now().toString() + ","
-                    + speed);
+                    + speed + ","
+                    + gri);
             out.newLine();
             out.flush();
             //Log.d("PAN","out");
