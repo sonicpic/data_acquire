@@ -23,9 +23,13 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+
+import com.amap.api.maps.MapView;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btn_file;
     private Switch switch_start;
+    private RadioGroup rg_tag;
 
     private SensorManager mSensorManager;
     private MySensorEventListener mMySensorEventListener;
@@ -64,18 +69,36 @@ public class MainActivity extends AppCompatActivity {
     //位置控制器种类
     private String provider;
 
+    MapView mMapView = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+//        MapsInitializer.updatePrivacyShow(this,true,true);
+//        MapsInitializer.updatePrivacyAgree(this,true);
+
+//        //获取地图控件引用
+//        mMapView = findViewById(R.id.map);
+//        //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
+//        mMapView.onCreate(savedInstanceState);
+//        //初始化地图控制器对象
+//        AMap aMap = null;
+//            aMap = mMapView.getMap();
+//            Log.d("pan",aMap.toString());
+
 
         tv_accelerometer_sensor = findViewById(R.id.tv_accelerometer_sensor);
         tv_location = findViewById(R.id.location_tv);
         tv_magnetic_sensor = findViewById(R.id.tv_magnetic_sensor);
         tv_rotation_sensor = findViewById(R.id.tv_rotation_sensor);
         tv_R = findViewById(R.id.tv_R);
-        btn_file = findViewById(R.id.btn_file);
+        btn_file = findViewById(R.id.btn_clear_count);
         switch_start = findViewById(R.id.switch_start);
+        rg_tag = findViewById(R.id.rg_tag);
+
 
         btn_file.setOnClickListener(new MyBtnListener());   //设置按钮监听器，打开文件管理
 
@@ -87,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         }
         out = new BufferedWriter(fstream);
         try {
-            out.write("acc_x,acc_y,acc_z,latitude,longitude,altitude,date,speed,z_gri");  //打印表头
+            out.write("acc_x,acc_y,acc_z,latitude,longitude,altitude,date,speed,z_gri,tag");  //打印表头
             out.newLine();
         } catch (IOException e) {
             e.printStackTrace();
@@ -156,13 +179,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
+        mMapView.onResume();
+
         if (mSensorManager == null) {
             return;
         }
         /*注册加速度传感器监听*/
         Sensor accelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (accelerometerSensor != null) {
-            mSensorManager.registerListener(mMySensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_UI);
+            mSensorManager.registerListener(mMySensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_GAME);
         } else {
             Log.d(TAG, "Accelerometer sensors are not supported on current devices.");
         }
@@ -170,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         /*注册磁场传感器监听*/
         Sensor magSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         if (magSensor != null) {
-            mSensorManager.registerListener(mMySensorEventListener, magSensor, SensorManager.SENSOR_DELAY_UI);
+            mSensorManager.registerListener(mMySensorEventListener, magSensor, SensorManager.SENSOR_DELAY_GAME);
         } else {
             Log.d(TAG, "magSensor sensors are not supported on current devices.");
         }
@@ -187,6 +213,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+//在activity执行onPause时执行mMapView.onPause ()，暂停地图的绘制
+        mMapView.onPause();
         if (mSensorManager == null) {
             return;
         }
@@ -197,6 +225,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //在activity执行onDestroy时执行mMapView.onDestroy()，销毁地图
+        mMapView.onDestroy();
         /*解除GPS监听器*/
         if (locationManager != null) {
             locationManager.removeUpdates(myLocationListerner);
@@ -292,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
                 if (switch_start.isChecked()) {
                     write(accValues, locationData,gri);
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -305,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
     private class MyBtnListener implements View.OnClickListener {
         @Override
         public void onClick(View arg0) {
-            if (arg0.getId() == R.id.btn_file) {
+            if (arg0.getId() == R.id.btn_clear_count) {
                 String path = "%2fAndroid%2fdara%2f";
                 Uri uri = Uri.parse("content://com.android.externalstorage.documents/document/primary:" + path);
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -370,6 +400,29 @@ public class MainActivity extends AppCompatActivity {
             altitude = "NULL";
             speed = "NULL";
         }
+        Button temp = findViewById(rg_tag.getCheckedRadioButtonId());
+        String tag;
+        if(temp.getText().toString().equals("NULL")){
+           tag = "0";
+        }
+        else if(temp.getText().toString().equals("平整")){
+            tag = "1";
+        }
+        else if(temp.getText().toString().equals("小颠簸")){
+            tag = "2";
+        }
+        else if(temp.getText().toString().equals("凹井盖")){
+            tag = "3";
+        }
+        else if(temp.getText().toString().equals("凸井盖")){
+            tag = "4";
+        }
+        else if(temp.getText().toString().equals("减速带")){
+            tag = "5";
+        }else{
+            tag = "6";
+        }
+
         try {
             out.write(acc_x + ","
                     + acc_y + ","
@@ -379,12 +432,19 @@ public class MainActivity extends AppCompatActivity {
                     + altitude + ","
                     + Instant.now().toString() + ","
                     + speed + ","
-                    + gri);
+                    + gri + ","
+                    + tag);
             out.newLine();
             out.flush();
             //Log.d("PAN","out");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //在activity执行onSaveInstanceState时执行mMapView.onSaveInstanceState (outState)，保存地图当前的状态
+        mMapView.onSaveInstanceState(outState);
     }
 }

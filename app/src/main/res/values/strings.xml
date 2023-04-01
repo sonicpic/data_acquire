@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">冰车僵尸×路障僵尸</string>
+    <string name="app_name">冰车僵尸创死路障僵尸</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_home">预警</string>
+    <string name="title_data">数据采集</string>
+    <string name="title_mine">我的</string>
 </resources>

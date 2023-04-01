@@ -3,7 +3,17 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Workspace/Android/DataAcquire/app/src/main/res/drawable/gradual_color_bg.xml" value="0.398" />
+        <entry key="..\:/Workspace/Android/DataAcquire/app/src/main/res/layout/activity_home.xml" value="0.24947916666666667" />
         <entry key="..\:/Workspace/Android/DataAcquire/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/Workspace/Android/DataAcquire/app/src/main/res/layout/fragment_dashboard.xml" value="0.24947916666666667" />
+        <entry key="..\:/Workspace/Android/DataAcquire/app/src/main/res/layout/fragment_data.xml" value="0.24947916666666667" />
+        <entry key="..\:/Workspace/Android/DataAcquire/app/src/main/res/layout/fragment_home.xml" value="0.32808219178082193" />
+        <entry key="..\:/Workspace/Android/DataAcquire/app/src/main/res/layout/fragment_mine.xml" value="0.24947916666666667" />
+        <entry key="..\:/Workspace/Android/DataAcquire/app/src/main/res/layout/fragment_notifications.xml" value="0.24947916666666667" />
+        <entry key="..\:/Workspace/Android/DataAcquire/app/src/main/res/menu/bottom_nav_menu.xml" value="0.264" />
+        <entry key="..\:/Workspace/Android/DataAcquire/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1205" />
+        <entry key="..\:/Workspace/Android/DataAcquire/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1205" />
       </map>
     </option>
   </component>

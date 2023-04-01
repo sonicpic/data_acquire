@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.DataAcquire" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#2980B9</item>
-        <item name="colorPrimaryVariant">#2980B9</item>
+        <item name="colorPrimary">#eeaeca</item>
+        <item name="colorPrimaryVariant">#eeaeca</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->w
         <item name="colorSecondary">#6dd5fa</item>
