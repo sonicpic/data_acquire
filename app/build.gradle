@@ -61,5 +61,8 @@ dependencies {
     //implementation 'com.amap.api:map2d:latest.integration'
     implementation 'com.amap.api:location:latest.integration'
 
+    //绘图
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
 
 }
